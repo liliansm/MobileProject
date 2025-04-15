@@ -1,42 +1,47 @@
 import { StyleSheet } from "react-native"
 import { Avatar, ListItem } from "react-native-elements"
 
-export default Contato = ({ name, number }) => (
-    <ListItem bottomDivider>
+export default Contato = ({ name, number, navigation, avatar }) => (
+    <ListItem 
+        containerStyle={styles.container}
+        onPress={() => navigation.navigate('detalhesContato', { name, number})}
+    >
         <Avatar
-            icon={{ name: 'person' }}
             rounded
             size="medium"
-            source={{ uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg' }}
+            source={{ uri: avatar }}
+            avatarStyle={styles.avatar}
         />
-        <ListItem.Content>
-            <ListItem.Title>{name}</ListItem.Title>
-            <ListItem.Subtitle>{number}</ListItem.Subtitle>
+        <ListItem.Content style={styles.content}>
+            <ListItem.Title style={styles.contatoNome}>{name}</ListItem.Title>
+            <ListItem.Subtitle style={styles.contatoNumero}>{number}</ListItem.Subtitle>
         </ListItem.Content>
-        <ListItem.Chevron />
+        <ListItem.Chevron color="#ff69b4" size={26} />
     </ListItem>
 )
 
 const styles = StyleSheet.create({
-    containerContato: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-        padding: '1rem',
-        boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px'
+    container: {
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ffc0cb',
+        paddingVertical: 12,
     },
-    info: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        marginLeft: 10,
-        gap: 2
+    avatar: {
+        borderWidth: 2,
+        borderColor: '#ff69b4',
+    },
+    content: {
+        marginLeft: 15,
     },
     contatoNome: {
-        fontWeight: '600'
+        fontWeight: '600',
+        color: '#d6336c',
+        fontSize: 18,
     },
     contatoNumero: {
-        fontWeight: '500'
+        fontWeight: '500',
+        color: '#ff69b4',
+        fontSize: 14,
     }
 });
