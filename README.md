@@ -36,3 +36,9 @@ Navegação: React Navigation
 Ícones: react-native-vector-icons
 
 Estilos: StyleSheet com abordagem modular
+
+![Captura de Tela (40)](https://github.com/user-attachments/assets/a07ebd6d-a1e9-4604-ad34-1c87f4a6e078)
+![Captura de Tela (41)](https://github.com/user-attachments/assets/46ae5c02-47fa-4161-b45c-157ce09822c6)
+![Captura de Tela (43)](https://github.com/user-attachments/assets/a3556d24-4c64-4ce6-bc37-f9cd0a704663)
+![Captura de Tela (42)](https://github.com/user-attachments/assets/322968a2-69f1-4289-b637-99c9deb0e116)
+![Captura de Tela (44)](https://github.com/user-attachments/assets/6b19b432-02d3-4764-9902-d326e5691e23)
