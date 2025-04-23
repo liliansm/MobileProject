@@ -32,7 +32,7 @@ const App = () => {
         <Stack.Screen 
           name="contatos" 
           component={ListaDeContatos}
-          options={({ navigation }) => ({
+          options={({ navigation, route }) => ({
             title: 'Lista de Contatos', 
             headerRight: () => (
               <Ionicons
@@ -40,7 +40,9 @@ const App = () => {
                 size={24}
                 color='black'
                 style={{ marginRight: 15 }}
-                onPress={() => navigation.navigate('cadastroContato')}
+                onPress={() => navigation.navigate('cadastroContato', { 
+                  userId: route.params?.userId 
+                })}
               />
             )
           })}
@@ -48,7 +50,7 @@ const App = () => {
         <Stack.Screen 
           name="cadastroContato" 
           component={CadastroContato}
-          options={{ title: 'Contato' }}
+          options={{ title: 'Novo Contato' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

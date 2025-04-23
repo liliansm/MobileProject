@@ -1,7 +1,39 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React, {useState} from "react";
+import axios from 'axios';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Avatar, Input, Button } from "react-native-elements";
 
-export default Login = ({ navigation }) => {
+const Login = ({ navigation }) => {
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [loading, setLoading]= useState(false);
+
+    const VerificarDados = async () => {
+        if (!email || !senha) {
+            Alert.alert("Preencha todos os campos!");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await axios.get("http://localhost:3000/usuarios");
+            const usuario = response.data.find(user => 
+                user.email === email && user.senha === senha
+            );
+
+            if (usuario) {
+                Alert.alert("Sucesso!", "Login realizado com sucesso.");
+                navigation.navigate('contatos', {userId: usuario.id});
+            } else {
+                Alert.alert("Erro", "Email ou senha incorretos.");
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Erro", "Falha ao conectar com o servidor.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -20,6 +52,10 @@ export default Login = ({ navigation }) => {
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
                     leftIcon={{ type: 'material', name: 'email', color: '#FF69B4' }}
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
                 />
                 <Input
                     placeholder="Senha"
@@ -28,14 +64,17 @@ export default Login = ({ navigation }) => {
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
                     leftIcon={{ type: 'material', name: 'lock', color: '#FF69B4' }}
+                    value={senha}
+                    onChangeText={setSenha}
                 />
 
                 <View style={{ width: '100%', marginBottom: 16 }}>
                     <Button
                         title='Entrar'
-                        onPress={() => navigation.navigate('contatos')}
+                        onPress={VerificarDados}
                         buttonStyle={styles.primaryButton}
                         titleStyle={styles.primaryButtonTitle}
+                        disabled={loading}
                     />
                 </View>
                 <View style={{ width: '100%', marginBottom: 24 }}>
@@ -125,3 +164,5 @@ const styles = StyleSheet.create({
     },
 
 });
+
+export default Login;

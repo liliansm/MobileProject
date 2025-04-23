@@ -1,7 +1,32 @@
-import { View, Text, StyleSheet } from "react-native"
+import React, {useState} from "react";
+import axios from "axios";
+import { View, Text, StyleSheet, Alert } from "react-native"
 import { Input, Button } from "react-native-elements"
 
-export default cadastro = ({ navigation }) => {
+function Cadastro ({ navigation }){
+    const [nome, setNome] = useState("");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [cpf, setCpf] = useState("");
+
+    const inserirDados = () => {
+        axios.post("http://localhost:3000/usuarios", { 
+            nome,
+            email,
+            senha,
+            cpf,
+        })
+        .then((response) => {
+            Alert.alert("Sucesso!", "Cadastro realizado com sucesso.");
+            navigation.goBack();
+        })
+        .catch((error) => {
+            Alert.alert("Erro", "Falha ao cadastrar. Verifique os dados.");
+            console.error(error);
+        });
+    };
+
+
     return (
         <View style={styles.container}>
             <View style={styles.form}>
@@ -12,18 +37,24 @@ export default cadastro = ({ navigation }) => {
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
+                    value={nome}
+                    onChangeText={setNome}
                 />
                 <Input
                     placeholder="Email"
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
+                    value={email}
+                    onChangeText={setEmail}
                 />
                 <Input
                     placeholder="CPF"
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
+                    value={cpf}
+                    onChangeText={setCpf}
                 />
                 <Input
                     placeholder="Senha"
@@ -31,6 +62,8 @@ export default cadastro = ({ navigation }) => {
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
+                    value={senha}
+                    onChangeText={setSenha}
                 />
 
                 <View style={{ width: '100%', marginTop: 16 }}>
@@ -38,6 +71,7 @@ export default cadastro = ({ navigation }) => {
                         title='Salvar'
                         buttonStyle={styles.primaryButton}
                         titleStyle={styles.primaryButtonTitle}
+                        onPress={inserirDados}
                     />
                 </View>
             </View>
@@ -111,3 +145,5 @@ const styles = StyleSheet.create({
         fontSize: 16
     }
 });
+
+export default Cadastro;

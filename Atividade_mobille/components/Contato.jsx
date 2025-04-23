@@ -1,24 +1,29 @@
-import { StyleSheet } from "react-native"
-import { Avatar, ListItem } from "react-native-elements"
+import { StyleSheet } from "react-native";
+import { Avatar, ListItem } from "react-native-elements";
 
-export default Contato = ({ name, number, navigation, avatar }) => (
+const Contato = ({ name, number, email, navigation, avatar, userId, contato }) => (
     <ListItem 
         containerStyle={styles.container}
-        onPress={() => navigation.navigate('detalhesContato', { name, number})}
+        onPress={() => navigation.navigate('detalhesContato', { 
+            userId: userId,
+            contatoId: contato.id,
+            contato: contato
+        })}
     >
         <Avatar
             rounded
             size="medium"
-            source={{ uri: avatar }}
+            source={{ uri: avatar || 'https://i.imgur.com/0CE7jHL.png' }}
             avatarStyle={styles.avatar}
         />
         <ListItem.Content style={styles.content}>
             <ListItem.Title style={styles.contatoNome}>{name}</ListItem.Title>
             <ListItem.Subtitle style={styles.contatoNumero}>{number}</ListItem.Subtitle>
+            {email && <ListItem.Subtitle style={styles.contatoEmail}>{email}</ListItem.Subtitle>}
         </ListItem.Content>
         <ListItem.Chevron color="#ff69b4" size={26} />
     </ListItem>
-)
+);
 
 const styles = StyleSheet.create({
     container: {
@@ -43,5 +48,12 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#ff69b4',
         fontSize: 14,
+    },
+    contatoEmail: {
+        color: '#888',
+        fontSize: 12,
+        marginTop: 2,
     }
 });
+
+export default Contato;
