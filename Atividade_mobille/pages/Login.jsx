@@ -1,35 +1,52 @@
-import React, {useState} from "react";
-import axios from 'axios';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Avatar, Input, Button } from "react-native-elements";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from "../firebaseConfig";
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
-    const [loading, setLoading]= useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const VerificarDados = async () => {
+    const auth = getAuth(app);
+
+    const fazerLogin = async () => {
         if (!email || !senha) {
-            Alert.alert("Preencha todos os campos!");
+            Alert.alert("Erro", "Preencha todos os campos!");
             return;
         }
 
         setLoading(true);
+        
         try {
-            const response = await axios.get("http://localhost:3000/usuarios");
-            const usuario = response.data.find(user => 
-                user.email === email && user.senha === senha
-            );
-
-            if (usuario) {
-                Alert.alert("Sucesso!", "Login realizado com sucesso.");
-                navigation.navigate('contatos', {userId: usuario.id});
-            } else {
-                Alert.alert("Erro", "Email ou senha incorretos.");
-            }
+            const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+            const user = userCredential.user;
+            
+            Alert.alert("Sucesso!", "Login realizado com sucesso.");
+            navigation.navigate('contatos', { userId: user.uid });
+            
         } catch (error) {
-            console.error(error);
-            Alert.alert("Erro", "Falha ao conectar com o servidor.");
+            let errorMessage = "Erro ao fazer login. Tente novamente.";
+            
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = "E-mail inválido.";
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = "Usuário desativado.";
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = "Usuário não encontrado.";
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = "Senha incorreta.";
+                    break;
+                default:
+                    console.error("Erro no login:", error);
+            }
+            
+            Alert.alert("Erro", errorMessage);
         } finally {
             setLoading(false);
         }
@@ -46,37 +63,43 @@ const Login = ({ navigation }) => {
                         containerStyle={{ backgroundColor: '#FF69B4' }}
                     />
                 </View>
+                
                 <Input
                     placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
                     leftIcon={{ type: 'material', name: 'email', color: '#FF69B4' }}
-                    value={email}
-                    onChangeText={setEmail}
                     autoCapitalize="none"
                     keyboardType="email-address"
                 />
+                
                 <Input
                     placeholder="Senha"
                     secureTextEntry={true}
+                    value={senha}
+                    onChangeText={setSenha}
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputText}
                     placeholderTextColor="#999"
                     leftIcon={{ type: 'material', name: 'lock', color: '#FF69B4' }}
-                    value={senha}
-                    onChangeText={setSenha}
                 />
 
                 <View style={{ width: '100%', marginBottom: 16 }}>
-                    <Button
-                        title='Entrar'
-                        onPress={VerificarDados}
-                        buttonStyle={styles.primaryButton}
-                        titleStyle={styles.primaryButtonTitle}
-                        disabled={loading}
-                    />
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#FF69B4" />
+                    ) : (
+                        <Button
+                            title='Entrar'
+                            onPress={fazerLogin}
+                            buttonStyle={styles.primaryButton}
+                            titleStyle={styles.primaryButtonTitle}
+                        />
+                    )}
                 </View>
+                
                 <View style={{ width: '100%', marginBottom: 24 }}>
                     <Button
                         title='Cadastre-se'
@@ -85,12 +108,12 @@ const Login = ({ navigation }) => {
                         titleStyle={styles.secondaryButtonTitle}
                     />
                 </View>
-
             </View>
         </View>
-    )
-}
+    );
+};
 
+// Estilos (mantidos os mesmos)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -150,19 +173,7 @@ const styles = StyleSheet.create({
     secondaryButtonTitle: {
         color: '#FF69B4',
         fontWeight: 'bold'
-    },
-    forgotPassword: {
-        color: '#FF69B4',
-        textDecorationLine: 'underline',
-        marginTop: 8
-    },
-    cadastroTitle: {
-        fontSize: 48,
-        fontWeight: '500',
-        marginBottom: 64,
-        color: '#FF69B4'
-    },
-
+    }
 });
 
 export default Login;

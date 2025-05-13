@@ -1,29 +1,61 @@
-import React, {useState} from "react";
-import axios from "axios";
-import { View, Text, StyleSheet, Alert } from "react-native"
-import { Input, Button } from "react-native-elements"
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { Input, Button } from "react-native-elements";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { app } from "../firebaseConfig";
 
-function Cadastro ({ navigation }){
+
+function Cadastro({ navigation }) {
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [cpf, setCpf] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const inserirDados = () => {
-        axios.post("http://localhost:3000/usuarios", { 
-            nome,
-            email,
-            senha,
-            cpf,
-        })
-        .then((response) => {
-            Alert.alert("Sucesso!", "Cadastro realizado com sucesso.");
+    const auth = getAuth(app); 
+
+    const inserirDados = async () => {
+        if (!nome || !email || !senha || !cpf) {
+            Alert.alert("Erro", "Preencha todos os campos.");
+            return;
+        }
+
+        if (senha.length < 6) {
+            Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const userCadastrado = await createUserWithEmailAndPassword(auth, email, senha);
+            if (userCadastrado) {
+
+                Alert.alert("Sucesso!", "Cadastro realizado com sucesso!");
             navigation.goBack();
-        })
-        .catch((error) => {
-            Alert.alert("Erro", "Falha ao cadastrar. Verifique os dados.");
-            console.error(error);
-        });
+             }
+            
+        } catch (error) {
+            let errorMessage = "Erro ao cadastrar. Tente novamente.";
+            
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = "Este e-mail já está em uso.";
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = "E-mail inválido.";
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = "Senha fraca (mínimo 6 caracteres).";
+                    break;
+                default:
+                    console.error("Erro no cadastro:", error);
+            }
+            
+            Alert.alert("Erro", errorMessage);
+        } finally {
+            setLoading(false);
+        }
     };
 
 
